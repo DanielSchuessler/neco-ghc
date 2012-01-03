@@ -227,22 +227,24 @@ function! s:extract_modules() "{{{
       endif
 
       let l:name = matchstr(l:str, '^[A-Za-z][A-Za-z0-9.]*', l:idx)
-      if !has_key(l:modules, l:name)
-        let l:modules[l:name] = { 'qualified': 0, 'export': 0 }
-      endif
-      let l:modules[l:name].qualified = l:modules[l:name].qualified || l:qualified
-      let l:idx = matchend(l:str, '^[A-Za-z][A-Za-z0-9.]*\s*', l:idx)
+      if !empty(l:name)
+        if !has_key(l:modules, l:name)
+          let l:modules[l:name] = { 'qualified': 0, 'export': 0 }
+        endif
+        let l:modules[l:name].qualified = l:modules[l:name].qualified || l:qualified
+        let l:idx = matchend(l:str, '^[A-Za-z][A-Za-z0-9.]*\s*', l:idx)
 
-      " as
-      let l:end = matchend(l:str, '^as\s\+', l:idx)
-      if l:end != -1
-        " let l:pattern = neocomplcache#get_keyword_pattern_end('haskell')
-        let l:pattern = "\\%([[:alpha:]_'][[:alnum:]_'.]*\\m\\)"
-        let l:as = matchstr(l:str, l:pattern, l:end)
-        let l:modules[l:name].as = l:as
-      elseif match(l:str, '^(', l:idx) != -1
-        " exports
-        let l:modules[l:name].export = 1
+        " as
+        let l:end = matchend(l:str, '^as\s\+', l:idx)
+        if l:end != -1
+          " let l:pattern = neocomplcache#get_keyword_pattern_end('haskell')
+          let l:pattern = "\\%([[:alpha:]_'][[:alnum:]_'.]*\\m\\)"
+          let l:as = matchstr(l:str, l:pattern, l:end)
+          let l:modules[l:name].as = l:as
+        elseif match(l:str, '^(', l:idx) != -1
+          " exports
+          let l:modules[l:name].export = 1
+        endif
       endif
 
     elseif l:in_module || l:str =~# '^\s*$'
